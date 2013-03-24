@@ -1,0 +1,70 @@
+<html>
+<head>
+<script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+<script>
+	$(document).ready(function() {
+		bwStats = {};
+		bwStats.container = $('#bwStats');
+		bwStats.refresh = function(){
+			this.lastrun = Date.now();
+			$.ajax({
+				url: "test.php",
+				context: this
+			}).done(function(data) {
+				data = JSON.parse(data);
+				if(typeof this.history == 'undefined'){
+					this.history = data;
+					this.refresh();
+				} else {
+					if(typeof this.current != 'undefined'){
+						this.history = this.current;
+					}
+					this.current = data;
+					interval = this.current.time - this.history.time;
+					if(interval > 0){
+						this.render();
+					}
+					
+					this.t = setTimeout(this.refresh.bind(this), 1000);
+				}
+			});
+		}
+		bwStats.render = function(){
+			var clients = this.current.clients;
+			var interval = this.current.time - this.history.time;
+			var output = '';
+			for(client in clients){
+				var dl, ul;
+				var ip = clients[client];
+				
+				if(typeof this.history.downloads[ip] == 'undefined'
+				   || typeof this.current.downloads[ip] == 'undefined'){
+					console.log('no download data for '+ip);
+				} else {
+					dl = (this.current.downloads[ip] - this.history.downloads[ip]);
+					dl = ((dl/interval)/1024).toFixed(3);
+					output += ('dl of '+ip+' is '+dl+' KB/s<br>');
+				}
+				
+				if(typeof this.history.uploads[ip] == 'undefined'
+				   || typeof this.current.uploads[ip] == 'undefined'){
+					console.log('no upload data for '+ip);
+				} else {
+					ul = (this.current.uploads[ip] - this.history.uploads[ip]);
+					ul = ((ul/interval)/1024).toFixed(3);
+					output += ('ul of '+ip+' is '+ul+' KB/s<br>');
+				}
+				output+='<br>';
+			}
+			this.container.html(output);
+		}
+		
+		bwStats.refresh();
+	});
+</script>
+</head>
+<body>
+	<h1>Bandwidth usage</h1>
+	<div id="bwStats">Loading...</div>
+</body>
+</html>
