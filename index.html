@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <script type="text/javascript" src="jquery-1.8.3.min.js"></script>
@@ -8,7 +9,7 @@
 		bwStats.refresh = function(){
 			this.lastrun = Date.now();
 			$.ajax({
-				url: "test.php",
+				url: "data/data",
 				context: this
 			}).done(function(data) {
 				data = JSON.parse(data);
@@ -31,7 +32,7 @@
 		}
 		bwStats.render = function(){
 			var clients = this.current.clients;
-			var interval = this.current.time - this.history.time;
+			var interval = parseFloat(this.current.time) - parseFloat(this.history.time);
 			var output = '';
 			for(client in clients){
 				var dl, ul;

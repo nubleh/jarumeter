@@ -54,6 +54,7 @@
 					}
 					$data = run_get_output($connection, "iptables -v -n -x -L ".$chain_name);
 				}
+				$time_of_data = microtime(true) + ""; // this is the exact time the data was extracted
 				
 				$data = preg_split('/\n/', $data);
 				array_shift($data); // remove the headers
@@ -98,6 +99,7 @@
 				$stats['execution_time'] = (microtime(true) - $timestart);
 				$stats['ssh_login_time'] = $logintime;
 				$stats['process_pid'] = getmypid();
+				$stats['time'] = (string)$time_of_data;
 				$stats_json = json_encode($stats);
 				
 				ftruncate($file, 0);

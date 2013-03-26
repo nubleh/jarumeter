@@ -1,4 +1,5 @@
 <?php
+	$full_path = realpath('.').'/';
 	$data_path = $full_path.'data/data';
 	$output = false;
 	if(is_file($data_path)){
